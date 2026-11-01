@@ -1,0 +1,595 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#211521" />
+  <meta name="description" content="A little Diwali surprise, made with love." />
+  <title>A Little Diwali Surprise</title>
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #211521;
+      --bg2: #2b1b29;
+      --cream: #fff4e8;
+      --muted: #d8c4d0;
+      --soft: #bda7b7;
+      --pink: #f4a9c5;
+      --pink2: #ffd0dc;
+      --gold: #f3c77c;
+      --line: rgba(255, 220, 228, .19);
+      --panel: rgba(65, 40, 61, .72);
+      --serif: Georgia, "Times New Roman", serif;
+      --sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      --ease: cubic-bezier(.2,.75,.25,1);
+    }
+    * { box-sizing: border-box; }
+    html, body { width:100%; height:100%; margin:0; overflow:hidden; background:var(--bg); }
+    body { color:var(--cream); font-family:var(--sans); -webkit-font-smoothing:antialiased; }
+    button, textarea { font:inherit; }
+    button { -webkit-tap-highlight-color:transparent; }
+    [hidden] { display:none !important; }
+
+    .backdrop {
+      position:fixed; inset:0; pointer-events:none; overflow:hidden;
+      background:
+        radial-gradient(ellipse at 50% 42%, rgba(213,112,151,.22), transparent 48%),
+        radial-gradient(ellipse at 12% 90%, rgba(242,177,109,.12), transparent 35%),
+        radial-gradient(ellipse at 92% 12%, rgba(210,128,171,.13), transparent 32%),
+        linear-gradient(145deg,#1b1420 0%,#2c1b2b 52%,#19131e 100%);
+    }
+    .backdrop::before, .backdrop::after {
+      content:""; position:absolute; width:260px; height:260px; border-radius:50%;
+      border:1px solid rgba(255,211,222,.08); box-shadow:0 0 0 28px rgba(255,211,222,.025),0 0 0 58px rgba(255,211,222,.018);
+      animation: float-orb 11s ease-in-out infinite alternate;
+    }
+    .backdrop::before { left:-145px; bottom:-110px; }
+    .backdrop::after { right:-155px; top:-145px; width:320px; height:320px; animation-delay:-4s; }
+    @keyframes float-orb { to { transform:translate(12px,-10px) scale(1.04); opacity:.65; } }
+
+    .sparkles { position:fixed; inset:0; pointer-events:none; overflow:hidden; }
+    .sparkle { position:absolute; width:4px; height:4px; border-radius:50%; background:#ffe0a6; opacity:.45; box-shadow:0 0 10px 2px rgba(255,214,155,.38); animation: twinkle 3.5s ease-in-out infinite alternate; }
+    .sparkle:nth-child(1){left:12%;top:19%;animation-delay:-.5s}.sparkle:nth-child(2){left:83%;top:25%;width:3px;height:3px;animation-delay:-2s}.sparkle:nth-child(3){left:22%;top:77%;animation-delay:-1.4s}.sparkle:nth-child(4){left:91%;top:76%;width:3px;height:3px;animation-delay:-.8s}.sparkle:nth-child(5){left:57%;top:12%;animation-delay:-2.6s}.sparkle:nth-child(6){left:71%;top:88%;animation-delay:-1.8s}
+    @keyframes twinkle { from { opacity:.15; transform:scale(.75); } to { opacity:.85; transform:scale(1.35); } }
+
+    .app { position:relative; z-index:1; display:flex; flex-direction:column; width:100%; height:100%; min-height:0; padding:max(18px,env(safe-area-inset-top)) max(24px,env(safe-area-inset-right)) max(13px,env(safe-area-inset-bottom)) max(24px,env(safe-area-inset-left)); }
+    .topbar { display:flex; align-items:center; justify-content:space-between; gap:12px; min-height:26px; }
+    .brand { display:flex; align-items:center; gap:8px; color:rgba(255,228,235,.76); font-size:10px; letter-spacing:.13em; text-transform:uppercase; }
+    .brand-heart { color:var(--pink); font-size:14px; animation: heartbeat 2s ease-in-out infinite; }
+    @keyframes heartbeat { 0%,100%{transform:scale(1)} 45%{transform:scale(1.2)} }
+    .top-note { color:rgba(255,228,235,.48); font-size:10px; letter-spacing:.06em; }
+    .stage-wrap { flex:1; min-height:0; display:grid; place-items:center; position:relative; padding:5px 0; }
+    .stage { display:none; width:min(100%,760px); max-height:100%; text-align:center; margin:auto; animation: pop-in .58s var(--ease) both; }
+    .stage.active { display:block; }
+    .stage.leaving { animation: fade-away .24s ease both; }
+    @keyframes pop-in { from{opacity:0;transform:translateY(10px) scale(.99);filter:blur(2px)} to{opacity:1;transform:none;filter:blur(0)} }
+    @keyframes fade-away { to{opacity:0;transform:translateY(-5px)} }
+    .eyebrow { color:var(--gold); font-size:10px; font-weight:650; letter-spacing:.18em; text-transform:uppercase; line-height:1.5; }
+    h1,h2,h3,p { margin-top:0; }
+    h1,h2,.question,.big-feeling { font-family:var(--serif); font-weight:400; letter-spacing:-.035em; }
+    .pink { color:var(--pink2); font-style:italic; }
+    .lead { max-width:490px; margin:0 auto; color:var(--muted); font-size:14px; line-height:1.7; }
+    .small-note { color:rgba(255,226,236,.51); font-size:10px; letter-spacing:.04em; margin:14px 0 0; }
+    .btn { min-height:45px; padding:0 21px; border-radius:999px; border:1px solid rgba(255,210,224,.34); color:var(--cream); background:rgba(255,255,255,.055); font-size:11px; font-weight:650; letter-spacing:.04em; cursor:pointer; transition:transform .22s ease,background .22s ease,border-color .22s ease,box-shadow .22s ease; }
+    .btn:hover { transform:translateY(-2px); background:rgba(255,255,255,.11); border-color:rgba(255,210,224,.62); box-shadow:0 8px 24px rgba(0,0,0,.16); }
+    .btn:active { transform:scale(.98); }
+    .btn:focus-visible,.choice:focus-visible,textarea:focus-visible { outline:2px solid var(--gold); outline-offset:3px; }
+    .btn.primary { color:#472638; border-color:#ffcfdd; background:linear-gradient(135deg,#ffd7e2,#f2a9c3); box-shadow:0 8px 25px rgba(209,111,149,.18); }
+    .btn.primary:hover { background:linear-gradient(135deg,#ffe5eb,#f8b7cd); }
+    .btn .arrow { margin-left:8px; font-size:16px; vertical-align:-1px; }
+    .button-row { display:flex; justify-content:center; align-items:center; flex-wrap:wrap; gap:10px; margin-top:22px; }
+
+    /* Welcome */
+    .welcome { padding:5px 0 12px; }
+    .diya { position:relative; width:118px; height:118px; margin:0 auto 8px; display:grid; place-items:center; }
+    .diya-glow { position:absolute; width:112px; height:92px; border-radius:50%; background:rgba(255,190,112,.22); filter:blur(26px); animation: glow 2.6s ease-in-out infinite alternate; }
+    @keyframes glow { to{transform:scale(1.18);opacity:.72} }
+    .flame { position:absolute; top:24px; width:23px; height:39px; border-radius:70% 15% 70% 70%; transform:rotate(45deg); transform-origin:50% 85%; background:radial-gradient(ellipse at 50% 72%,#fff8d9 0 15%,#ffd174 43%,#e77b61 76%,transparent 78%); filter:drop-shadow(0 0 11px rgba(255,186,103,.65)); animation:flicker 1.7s ease-in-out infinite alternate; }
+    @keyframes flicker { from{transform:rotate(42deg) scale(.94,1.02)} to{transform:rotate(49deg) scale(1.05,.96)} }
+    .bowl { position:absolute; bottom:20px; width:82px; height:31px; border-radius:12% 12% 48% 48% / 10% 10% 85% 85%; background:linear-gradient(180deg,#ffcf8d,#b87352 60%,#77435a); box-shadow:inset 0 3px 5px rgba(255,244,205,.5),0 8px 18px rgba(0,0,0,.23); }
+    .bowl::before { content:""; position:absolute; top:-3px; left:0; right:0; height:7px; border-radius:50%; background:linear-gradient(90deg,#9a5b4e,#ffe0a5 50%,#9a5b4e); }
+    .diya-heart { position:absolute; bottom:2px; color:rgba(255,209,151,.65); font-size:13px; }
+    h1 { font-size:clamp(44px,7vw,72px); line-height:1.02; margin:9px 0 14px; }
+    .welcome .lead { max-width:455px; }
+    .welcome .button-row { margin-top:21px; }
+
+    /* Q&A */
+    .qa-card { width:min(100%,650px); margin:auto; padding:clamp(15px,3.5vh,28px) clamp(12px,3vw,25px); border:1px solid rgba(255,209,226,.16); border-radius:24px; background:linear-gradient(145deg,rgba(72,46,69,.7),rgba(39,28,43,.64)); box-shadow:0 20px 65px rgba(0,0,0,.14); }
+    .qa-heading { display:flex; align-items:center; justify-content:center; gap:9px; margin-bottom:12px; }
+    .mini-heart { color:var(--pink); font-size:14px; animation:heartbeat 2.2s ease-in-out infinite; }
+    .question { max-width:570px; margin:9px auto 9px; font-size:clamp(29px,4.2vw,42px); line-height:1.1; }
+    .question-hint { color:var(--soft); font-size:12px; line-height:1.5; margin:0 auto 17px; }
+    .choices { display:grid; grid-template-columns:1fr 1fr; gap:9px; width:min(100%,560px); margin:0 auto; }
+    .choice { min-height:48px; display:flex; align-items:center; justify-content:center; padding:9px 13px; border:1px solid rgba(255,210,224,.2); border-radius:13px; background:rgba(255,255,255,.045); color:#ffedf1; font-size:12px; line-height:1.35; cursor:pointer; transition:all .2s ease; }
+    .choice:hover { transform:translateY(-1px); background:rgba(244,169,197,.1); border-color:rgba(255,210,224,.52); }
+    .choice.selected { background:rgba(244,169,197,.16); border-color:var(--pink); box-shadow:inset 0 0 0 1px rgba(244,169,197,.12); }
+    .choice.selected::after { content:"♥"; color:var(--pink2); margin-left:8px; font-size:11px; }
+    .reaction { min-height:24px; margin:11px auto 0; color:var(--gold); font-family:var(--serif); font-size:16px; line-height:1.35; opacity:0; transform:translateY(4px); transition:opacity .25s ease,transform .25s ease; }
+    .reaction.visible { opacity:1; transform:none; }
+    .qa-next { margin-top:12px; }
+    .qa-next:disabled { opacity:.35; cursor:default; transform:none; box-shadow:none; }
+    .free-answer { width:min(100%,525px); margin:0 auto; }
+    textarea { width:100%; height:76px; resize:none; border-radius:13px; border:1px solid rgba(255,210,224,.24); background:rgba(255,255,255,.05); color:var(--cream); padding:12px 14px; outline:none; font-size:13px; line-height:1.5; }
+    textarea::placeholder { color:rgba(226,199,213,.48); }
+    .privacy-note { color:rgba(226,199,213,.56); font-size:10px; margin:6px 0 0; }
+
+    /* Spoiler */
+    .spoiler-card { width:min(100%,600px); margin:auto; padding:clamp(27px,5vh,48px) clamp(20px,5vw,54px); border:1px solid rgba(255,209,226,.2); border-radius:27px; background:linear-gradient(145deg,rgba(77,48,73,.72),rgba(39,27,43,.72)); box-shadow:0 23px 70px rgba(0,0,0,.16); }
+    .envelope { width:61px; height:50px; margin:0 auto 20px; position:relative; display:grid; place-items:center; color:#ffd2df; font-size:27px; filter:drop-shadow(0 4px 10px rgba(244,169,197,.24)); animation: bob 2.7s ease-in-out infinite; }
+    @keyframes bob { 50%{transform:translateY(-5px) rotate(-2deg)} }
+    .spoiler-card h2 { margin:11px auto 13px; font-size:clamp(37px,5.5vw,54px); line-height:1.05; }
+    .spoiler-card .lead { max-width:435px; font-size:14px; }
+
+    /* Final */
+    .final-wrap { width:min(100%,720px); margin:auto; }
+    .letter-card { padding:clamp(17px,3.2vh,27px) clamp(18px,4vw,39px); border:1px solid rgba(255,209,226,.21); border-radius:24px; background:linear-gradient(145deg,rgba(78,49,72,.78),rgba(39,28,43,.8)); box-shadow:0 22px 72px rgba(0,0,0,.19); }
+    .letter-top { color:var(--gold); font-size:10px; letter-spacing:.16em; text-transform:uppercase; margin-bottom:10px; }
+    .letter-title { font-family:var(--serif); color:var(--pink2); font-size:clamp(27px,4vw,37px); margin:0 0 10px; font-weight:400; }
+    .letter-copy { max-width:590px; margin:0 auto; color:#e7d5df; font-size:clamp(11px,1.12vw,13px); line-height:1.6; }
+    .big-feeling { max-width:650px; margin:clamp(15px,2.5vh,22px) auto 0; color:#ffe0a8; font-size:clamp(28px,4.2vw,43px); line-height:1.12; text-wrap:balance; }
+    .proposal-question { margin:13px auto 0; color:#fff1f4; font-family:var(--serif); font-size:clamp(20px,2.7vw,27px); line-height:1.2; }
+    .answer-actions { display:flex; justify-content:center; flex-wrap:wrap; gap:8px; margin-top:14px; }
+    .answer-actions .btn { min-height:40px; padding:0 17px; font-size:10px; }
+    .answer-actions .btn.no { background:rgba(255,255,255,.025); border-color:rgba(255,210,224,.2); }
+    .final-reply { min-height:22px; margin:10px auto 0; color:var(--pink2); font-family:var(--serif); font-size:16px; line-height:1.35; opacity:0; transition:opacity .25s ease; }
+    .final-reply.visible { opacity:1; }
+    .share-box { margin:10px auto 0; }
+    .share-hint { color:rgba(255,228,235,.68); font-size:10px; line-height:1.45; margin:0 0 8px; }
+    .consent-row { display:flex; align-items:flex-start; justify-content:center; gap:8px; max-width:430px; margin:0 auto 9px; color:rgba(255,228,235,.72); font-size:10px; line-height:1.45; text-align:left; cursor:pointer; }
+    .consent-row input { flex:0 0 auto; margin:1px 0 0; accent-color:var(--pink); }
+    .share-btn { min-height:36px; padding:0 17px; font-size:10px; }
+    .share-btn:disabled { opacity:.38; cursor:not-allowed; transform:none; box-shadow:none; }
+    .manual-share-btn { min-height:32px; margin-left:5px; padding:0 12px; font-size:9px; }
+    .share-status { min-height:15px; color:var(--gold); font-size:10px; line-height:1.45; margin:6px 0 0; }
+    .replay { margin-top:6px; }
+    .text-btn { min-height:32px; padding:0 12px; border:0; background:transparent; color:rgba(255,228,235,.63); font-size:10px; cursor:pointer; }
+    .text-btn:hover { color:var(--pink2); }
+    .footer { display:flex; justify-content:center; align-items:center; min-height:20px; color:rgba(255,220,230,.36); font-size:9px; letter-spacing:.08em; }
+    .footer .heart { color:var(--pink); padding:0 5px; }
+
+    @media(max-width:620px) {
+      .app { padding:max(12px,env(safe-area-inset-top)) max(14px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left)); }
+      .topbar { min-height:20px; }
+      .brand { font-size:8px; letter-spacing:.1em; }
+      .top-note { font-size:9px; }
+      .stage-wrap { padding:2px 0; }
+      h1 { font-size:clamp(42px,12vw,58px); margin:7px 0 11px; }
+      .diya { transform:scale(.82); transform-origin:center bottom; height:99px; margin-bottom:0; }
+      .lead { font-size:13px; line-height:1.6; }
+      .welcome .button-row { margin-top:16px; }
+      .btn { min-height:42px; padding:0 18px; font-size:10px; }
+      .qa-card { padding:14px 11px; border-radius:19px; }
+      .qa-heading { margin-bottom:8px; }
+      .question { font-size:clamp(26px,8vw,35px); margin:7px auto; }
+      .question-hint { font-size:11px; margin-bottom:11px; }
+      .choices { grid-template-columns:1fr; gap:6px; }
+      .choice { min-height:39px; padding:7px 10px; font-size:11px; }
+      .reaction { min-height:21px; margin-top:7px; font-size:14px; }
+      .qa-next { margin-top:8px; }
+      textarea { height:68px; font-size:12px; }
+      .spoiler-card { padding:25px 20px; border-radius:22px; }
+      .envelope { margin-bottom:13px; }
+      .spoiler-card h2 { font-size:clamp(36px,10vw,48px); }
+      .spoiler-card .lead { font-size:13px; }
+      .final-wrap { max-height:100%; }
+      .letter-card { padding:14px 13px 12px; border-radius:19px; }
+      .letter-top { font-size:8px; margin-bottom:7px; }
+      .letter-title { font-size:26px; margin-bottom:7px; }
+      .letter-copy { font-size:11px; line-height:1.48; }
+      .big-feeling { font-size:clamp(26px,7.6vw,35px); margin-top:12px; }
+      .proposal-question { font-size:21px; margin-top:10px; }
+      .answer-actions { margin-top:10px; gap:6px; }
+      .answer-actions .btn { min-height:36px; padding:0 13px; font-size:9px; }
+      .final-reply { font-size:14px; min-height:19px; margin-top:7px; }
+      .share-hint { font-size:9px; margin-bottom:5px; }
+      .consent-row { font-size:9px; margin-bottom:7px; }
+      .share-btn { min-height:33px; }
+      .manual-share-btn { min-height:30px; }
+      .footer { min-height:15px; font-size:8px; }
+    }
+    @media(max-height:700px) {
+      .app { padding-top:max(7px,env(safe-area-inset-top)); padding-bottom:max(5px,env(safe-area-inset-bottom)); }
+      .topbar { min-height:17px; }
+      .footer { min-height:13px; }
+      .diya { transform:scale(.7); height:87px; margin-bottom:-7px; }
+      h1 { margin:4px 0 8px; }
+      .welcome .lead { font-size:12px; line-height:1.5; }
+      .welcome .button-row { margin-top:12px; }
+      .qa-card { padding:10px; }
+      .question { font-size:clamp(25px,6vw,34px); }
+      .question-hint { margin-bottom:8px; }
+      .choice { min-height:35px; }
+      .spoiler-card { padding:20px; }
+      .letter-card { padding-top:10px; padding-bottom:9px; }
+      .letter-copy { line-height:1.4; }
+      .big-feeling { font-size:clamp(25px,3.7vw,34px); margin-top:9px; }
+      .proposal-question { margin-top:7px; }
+      .answer-actions { margin-top:8px; }
+    }
+    @media(prefers-reduced-motion:reduce) {
+      *,*::before,*::after { animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="backdrop" aria-hidden="true"></div>
+  <div class="sparkles" aria-hidden="true">
+    <i class="sparkle"></i><i class="sparkle"></i><i class="sparkle"></i><i class="sparkle"></i><i class="sparkle"></i><i class="sparkle"></i>
+  </div>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand"><span class="brand-heart">♥</span><span>A little Diwali surprise</span></div>
+      <div class="top-note">made just for you</div>
+    </header>
+
+    <main class="stage-wrap" aria-live="polite">
+      <section class="stage active" id="welcome" aria-labelledby="welcome-title">
+        <div class="welcome">
+          <div class="diya" aria-hidden="true"><div class="diya-glow"></div><div class="flame"></div><div class="bowl"></div><div class="diya-heart">♥</div></div>
+          <div class="eyebrow">A little light, a little love</div>
+          <h1 id="welcome-title">Happy Diwali,<br><span class="pink">Priya!</span></h1>
+          <p class="lead">I hope your day is full of sweets, smiles, and all the little things that make you happy.</p>
+          <div class="button-row"><button class="btn primary" data-go="qa" type="button">I made you a little something <span class="arrow">→</span></button></div>
+          <p class="small-note">P.S. There may be a tiny surprise at the end. ✨</p>
+        </div>
+      </section>
+
+      <section class="stage" id="qa" aria-labelledby="question-title">
+        <div class="qa-card">
+          <div class="qa-heading"><span class="mini-heart">♥</span><span class="eyebrow">A few little questions</span><span class="mini-heart">♥</span></div>
+          <div id="qa-panel">
+            <h2 class="question" id="question-title"></h2>
+            <p class="question-hint" id="question-hint"></p>
+            <div class="choices" id="choices" role="group" aria-label="Choose an answer"></div>
+            <div class="free-answer" id="free-answer" hidden>
+              <textarea id="memory-input" maxlength="300" placeholder="Anything that comes to mind... 💗"></textarea>
+              <p class="privacy-note">This stays here unless you choose to share your answers.</p>
+            </div>
+            <p class="reaction" id="reaction" aria-live="polite"></p>
+            <button class="btn primary qa-next" id="qa-next" type="button" disabled>Next <span class="arrow">→</span></button>
+          </div>
+        </div>
+      </section>
+
+      <section class="stage" id="spoiler" aria-labelledby="spoiler-title">
+        <div class="spoiler-card">
+          <div class="envelope" aria-hidden="true">💌</div>
+          <div class="eyebrow">Okay... one little spoiler</div>
+          <h2 id="spoiler-title">The sweetest part<br>is still <span class="pink">coming.</span></h2>
+          <p class="lead">The questions were just an excuse to bring you here. There's something I really want you to know.</p>
+          <div class="button-row"><button class="btn primary" data-go="final" type="button">Open my letter <span class="arrow">→</span></button></div>
+        </div>
+      </section>
+
+      <section class="stage" id="final" aria-labelledby="final-title">
+        <div class="final-wrap">
+          <div class="letter-card">
+            <div class="letter-top">A tiny letter, from me to you</div>
+            <h2 class="letter-title" id="final-title">Hey, you. 💗</h2>
+            <p class="letter-copy">I made this little page because sometimes the simplest words are the hardest to say. You mean so much to me. I love our laughs, our talks, and even the smallest moments we share. I don't need a perfect story — I just want something real, with you.</p>
+            <div class="big-feeling">I'm in love with you, and I want to keep choosing you — today, tomorrow, and every day after.</div>
+            <div class="proposal-question">Will you be my forever person?</div>
+            <div class="answer-actions" id="proposal-actions">
+              <button class="btn primary" data-answer="yes" type="button">Yes, always ❤️</button>
+              <button class="btn" data-answer="time" type="button">I need a little time</button>
+              <button class="btn no" data-answer="no" type="button">No</button>
+            </div>
+            <p class="final-reply" id="final-reply" aria-live="polite"></p>
+            <div class="share-box" id="share-box" hidden>
+              <p class="share-hint">Would you like to share your answers with me? They will be saved privately and sent to my Telegram. 💌</p>
+              <label class="consent-row"><input id="share-consent" type="checkbox"> <span>I agree to share my answers and my final choice with Krishna.</span></label>
+              <button class="btn primary share-btn" id="share-answers" type="button" disabled>Share my answers <span class="arrow">↗</span></button>
+              <button class="btn manual-share-btn" id="share-manually" type="button" hidden>Share manually instead</button>
+              <p class="share-status" id="share-status" aria-live="polite"></p>
+            </div>
+            <button class="text-btn replay" id="restart" type="button" hidden>Watch it again ↺</button>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="footer">made with <span class="heart">♥</span> and a little courage</footer>
+  </div>
+
+  <script>
+    (() => {
+      const stages = [...document.querySelectorAll('.stage')];
+      const qaNext = document.getElementById('qa-next');
+      const choicesEl = document.getElementById('choices');
+      const reactionEl = document.getElementById('reaction');
+      const questionTitle = document.getElementById('question-title');
+      const questionHint = document.getElementById('question-hint');
+      const freeAnswer = document.getElementById('free-answer');
+      const memoryInput = document.getElementById('memory-input');
+      const finalReply = document.getElementById('final-reply');
+      const shareBox = document.getElementById('share-box');
+      const shareStatus = document.getElementById('share-status');
+      const shareConsent = document.getElementById('share-consent');
+      const shareButton = document.getElementById('share-answers');
+      const manualShareButton = document.getElementById('share-manually');
+      const proposalActions = document.getElementById('proposal-actions');
+      const restart = document.getElementById('restart');
+
+      const questions = [
+        {
+          title: 'Pick our perfect little Diwali plan...',
+          hint: 'Choose the one that sounds most like us.',
+          options: [
+            ['Sweets and silly talks', 'A very strong choice. Snacks are important. 😋'],
+            ['A quiet walk under the lights', 'That sounds a little magical, honestly. ✨'],
+            ['Songs and a long drive', 'Good music and your company? Perfect.'],
+            ['All of them, obviously', 'Haha, I had a feeling you would say that. 💗']
+          ]
+        },
+        {
+          title: 'What feels most like us?',
+          hint: 'There is no wrong answer here.',
+          options: [
+            ['Random laughs', 'And hopefully many more of those. 🤭'],
+            ['Long, honest conversations', 'The kind where time just disappears.'],
+            ['Little check-ins during the day', 'Small messages, big smiles.'],
+            ['A little bit of everything', 'I would not have it any other way. ❤️']
+          ]
+        },
+        {
+          title: 'What makes a bond feel special?',
+          hint: 'Pick what matters most to your heart.',
+          options: [
+            ['Being understood', 'That kind of comfort is rare and beautiful.'],
+            ['Trust and honesty', 'Always worth choosing.'],
+            ['Being there on difficult days', 'That is what care looks like.'],
+            ['All of these things', 'I think so too. The little things make it real.']
+          ]
+        },
+        {
+          title: 'One little moment with me you still remember?',
+          hint: 'You can write it down, or just tap next. No pressure.',
+          free: true,
+          reaction: 'I hope we make many more memories like that. 💗'
+        }
+      ];
+
+      const answers = [];
+      let questionIndex = 0;
+      let selectedAnswer = null;
+      let finalChoice = '';
+      let transitioning = false;
+
+      const responseLabels = {
+        yes: 'Yes, always ❤️',
+        time: 'I need a little time',
+        no: 'No'
+      };
+
+      function showStage(id) {
+        if (transitioning) return;
+        const current = document.querySelector('.stage.active');
+        const next = document.getElementById(id);
+        if (!next || current === next) return;
+        transitioning = true;
+        if (current) {
+          current.classList.add('leaving');
+          window.setTimeout(() => {
+            current.classList.remove('active', 'leaving');
+            next.classList.add('active');
+            transitioning = false;
+          }, 230);
+        } else {
+          next.classList.add('active');
+          transitioning = false;
+        }
+      }
+
+      function resetAnswerState() {
+        selectedAnswer = null;
+        qaNext.disabled = true;
+        qaNext.innerHTML = 'Next <span class="arrow">→</span>';
+        reactionEl.textContent = '';
+        reactionEl.classList.remove('visible');
+        choicesEl.innerHTML = '';
+        freeAnswer.hidden = true;
+        memoryInput.value = '';
+      }
+
+      function renderQuestion() {
+        resetAnswerState();
+        const q = questions[questionIndex];
+        questionTitle.textContent = q.title;
+        questionHint.textContent = q.hint;
+        if (q.free) {
+          freeAnswer.hidden = false;
+          qaNext.disabled = false;
+          reactionEl.textContent = q.reaction;
+          reactionEl.classList.add('visible');
+        } else {
+          q.options.forEach(([label, response], index) => {
+            const button = document.createElement('button');
+            button.type = 'button';
+            button.className = 'choice';
+            button.textContent = label;
+            button.setAttribute('aria-pressed', 'false');
+            button.addEventListener('click', () => {
+              [...choicesEl.children].forEach(item => {
+                item.classList.remove('selected');
+                item.setAttribute('aria-pressed', 'false');
+              });
+              button.classList.add('selected');
+              button.setAttribute('aria-pressed', 'true');
+              selectedAnswer = index;
+              reactionEl.textContent = response;
+              reactionEl.classList.add('visible');
+              qaNext.disabled = false;
+            });
+            choicesEl.appendChild(button);
+          });
+        }
+      }
+
+      document.querySelectorAll('[data-go]').forEach(button => {
+        button.addEventListener('click', () => {
+          if (button.dataset.go === 'qa') {
+            answers.length = 0;
+            questionIndex = 0;
+            renderQuestion();
+          }
+          showStage(button.dataset.go);
+        });
+      });
+
+      qaNext.addEventListener('click', () => {
+        if (qaNext.disabled) return;
+        const q = questions[questionIndex];
+        if (q.free) {
+          answers[questionIndex] = {
+            question: q.title,
+            answer: memoryInput.value.trim() || '(Skipped)'
+          };
+        } else {
+          answers[questionIndex] = {
+            question: q.title,
+            answer: q.options[selectedAnswer][0]
+          };
+        }
+        if (questionIndex < questions.length - 1) {
+          questionIndex += 1;
+          renderQuestion();
+        } else {
+          showStage('spoiler');
+        }
+      });
+
+      document.querySelectorAll('[data-answer]').forEach(button => {
+        button.addEventListener('click', () => {
+          finalChoice = button.dataset.answer;
+          proposalActions.hidden = true;
+          const messages = {
+            yes: 'You just made my Diwali a little brighter. ❤️',
+            time: 'Of course. Take your time — there is no pressure, ever. 💗',
+            no: 'Thank you for being honest. I respect your answer, always. 🤍'
+          };
+          finalReply.textContent = messages[finalChoice];
+          finalReply.classList.add('visible');
+          shareBox.hidden = false;
+          shareConsent.checked = false;
+          shareButton.disabled = true;
+          shareButton.disabled = false; // enabled only after explicit consent below
+          shareButton.disabled = true;
+          shareButton.textContent = 'Share my answers ↗';
+          manualShareButton.hidden = true;
+          shareStatus.textContent = '';
+          restart.hidden = false;
+        });
+      });
+
+      function makeSummary() {
+        const lines = ["A little Diwali surprise — my answers 💗", ""];
+        answers.forEach((item, index) => {
+          if (item) {
+            lines.push(`${index + 1}. ${item.question}`);
+            lines.push(`   ${item.answer}`);
+          }
+        });
+        lines.push('', `My answer to your question: ${responseLabels[finalChoice] || 'Not answered'}`);
+        lines.push('', 'Sent with a little Diwali love.');
+        return lines.join('\n');
+      }
+
+      shareConsent.addEventListener('change', () => {
+        shareButton.disabled = !shareConsent.checked;
+        if (!shareConsent.checked) {
+          shareStatus.textContent = '';
+          manualShareButton.hidden = true;
+        }
+      });
+
+      async function shareManually() {
+        const summary = makeSummary();
+        shareStatus.textContent = '';
+        if (navigator.share) {
+          try {
+            await navigator.share({ title: 'My Diwali answers', text: summary });
+            shareStatus.textContent = 'Thank you for sharing. 💗';
+            return;
+          } catch (error) {
+            if (error && error.name === 'AbortError') return;
+          }
+        }
+        try {
+          await navigator.clipboard.writeText(summary);
+          shareStatus.textContent = 'Copied! You can paste it into our chat. 💌';
+        } catch (error) {
+          const blob = new Blob([summary], { type: 'text/plain;charset=utf-8' });
+          const url = URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = 'my-diwali-answers.txt';
+          document.body.appendChild(link);
+          link.click();
+          link.remove();
+          URL.revokeObjectURL(url);
+          shareStatus.textContent = 'Your answer note has been downloaded. Send it to me. 💌';
+        }
+      }
+
+      shareButton.addEventListener('click', async () => {
+        if (!shareConsent.checked) return;
+        shareButton.disabled = true;
+        manualShareButton.hidden = true;
+        shareStatus.textContent = 'Sending your answers with care… 💗';
+        try {
+          const response = await fetch('/.netlify/functions/submit-response', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              answers,
+              final_choice: finalChoice,
+              consent: true,
+              website: ''
+            })
+          });
+          const result = await response.json().catch(() => ({}));
+          if (!response.ok || !result.ok) {
+            throw new Error(result.message || 'The response could not be sent.');
+          }
+          shareStatus.textContent = result.telegramSent
+            ? 'Your answers are safely saved. I have been notified too. Thank you. 💗'
+            : 'Your answers are safely saved. The notification may arrive a little later. 💗';
+          shareButton.textContent = 'Answers shared ✓';
+        } catch (error) {
+          shareStatus.textContent = 'The automatic share is unavailable right now. You can still send your answers manually.';
+          shareButton.disabled = false;
+          manualShareButton.hidden = false;
+        }
+      });
+
+      manualShareButton.addEventListener('click', () => {
+        if (!shareConsent.checked) return;
+        shareManually();
+      });
+
+      restart.addEventListener('click', () => {
+        questionIndex = 0;
+        answers.length = 0;
+        finalChoice = '';
+        finalReply.textContent = '';
+        finalReply.classList.remove('visible');
+        shareBox.hidden = true;
+        shareStatus.textContent = '';
+        shareConsent.checked = false;
+        shareButton.disabled = true;
+        shareButton.textContent = 'Share my answers ↗';
+        manualShareButton.hidden = true;
+        proposalActions.hidden = false;
+        restart.hidden = true;
+        renderQuestion();
+        showStage('welcome');
+      });
+
+      if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+        document.documentElement.classList.add('reduce-motion');
+      }
+      renderQuestion();
+    })();
+  </script>
+</body>
+</html>
