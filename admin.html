@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex, nofollow" />
+  <meta name="theme-color" content="#211521" />
+  <title>Private Response Book</title>
+  <style>
+    :root{color-scheme:dark;--bg:#211521;--panel:#38273a;--cream:#fff4e8;--muted:#d8c4d0;--pink:#f4a9c5;--gold:#f3c77c;--line:rgba(255,220,228,.16);--sans:ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;--serif:Georgia,"Times New Roman",serif}
+    *{box-sizing:border-box}html,body{min-height:100%;margin:0}body{background:radial-gradient(ellipse at 50% 0%,rgba(213,112,151,.2),transparent 40%),linear-gradient(145deg,#1b1420,#2c1b2b 55%,#19131e);color:var(--cream);font-family:var(--sans);padding:26px 16px 42px}
+    .shell{width:min(100%,820px);margin:0 auto}.top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:30px}.brand{font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#f8c9d7}.tag{font-size:11px;color:rgba(255,228,235,.56)}
+    h1{font:400 clamp(37px,7vw,55px)/1.04 var(--serif);letter-spacing:-.035em;margin:0 0 9px}.intro{color:var(--muted);font-size:14px;line-height:1.6;margin:0 0 24px}.panel,.response{border:1px solid var(--line);background:linear-gradient(145deg,rgba(78,49,72,.82),rgba(39,28,43,.86));border-radius:20px;box-shadow:0 18px 55px rgba(0,0,0,.16)}.panel{padding:22px;max-width:480px}.panel label{display:block;color:#f5d4df;font-size:12px;margin-bottom:8px}.panel input{width:100%;height:45px;border:1px solid rgba(255,210,224,.25);border-radius:12px;background:rgba(255,255,255,.06);color:var(--cream);padding:0 13px;font-size:14px;outline:none}.panel input:focus{border-color:var(--pink);box-shadow:0 0 0 3px rgba(244,169,197,.12)}
+    button{border:1px solid #ffcfdd;border-radius:999px;background:linear-gradient(135deg,#ffd7e2,#f2a9c3);color:#472638;font-weight:700;padding:12px 20px;margin-top:13px;cursor:pointer}button.secondary{background:rgba(255,255,255,.05);color:var(--cream);border-color:var(--line);margin-left:7px}.status{font-size:12px;line-height:1.5;color:var(--gold);min-height:19px;margin:12px 0 0}.toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:24px 0 13px}.toolbar h2{font:400 27px var(--serif);margin:0}.count{font-size:11px;color:var(--muted)}.list{display:grid;gap:13px}.response{padding:18px}.response-head{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;border-bottom:1px solid var(--line);padding-bottom:12px;margin-bottom:13px}.date{font-size:11px;color:var(--muted)}.choice{font-size:11px;color:#ffe0a8;border:1px solid rgba(243,199,124,.25);border-radius:999px;padding:6px 10px;white-space:nowrap}.qa{margin:0 0 12px}.q{font-size:11px;color:#f5c7d6;margin:0 0 4px}.a{font-size:13px;color:var(--cream);line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}.empty{color:var(--muted);font-size:13px;padding:20px 0}.locked{color:rgba(255,228,235,.55);font-size:10px;line-height:1.5;margin-top:13px}
+    @media(max-width:520px){body{padding:18px 12px 30px}.top{margin-bottom:24px}.tag{display:none}.panel{padding:18px}.response{padding:14px}.toolbar{align-items:flex-start;flex-direction:column}.response-head{flex-direction:column}.choice{white-space:normal}}
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="top"><div class="brand">♥ A little Diwali surprise</div><div class="tag">Private response book</div></header>
+    <h1>Your little inbox. 💌</h1>
+    <p class="intro">This page is private. Enter the dashboard password you set in Netlify to view answers that were voluntarily shared.</p>
+
+    <form class="panel" id="login-form">
+      <label for="password">Dashboard password</label>
+      <input id="password" type="password" autocomplete="current-password" required placeholder="Enter your private password" />
+      <button type="submit" id="login-button">View responses</button>
+      <p class="status" id="status" role="status" aria-live="polite"></p>
+      <p class="locked">Your password is sent over HTTPS to verify access. It is not saved in this browser.</p>
+    </form>
+
+    <section id="inbox" hidden>
+      <div class="toolbar"><h2>Shared with you</h2><div><span class="count" id="count"></span><button class="secondary" id="refresh" type="button">Refresh</button><button class="secondary" id="lock" type="button">Lock</button></div></div>
+      <div class="list" id="responses"></div>
+    </section>
+  </main>
+  <script>
+    (() => {
+      const form = document.getElementById('login-form');
+      const passwordInput = document.getElementById('password');
+      const status = document.getElementById('status');
+      const inbox = document.getElementById('inbox');
+      const list = document.getElementById('responses');
+      const count = document.getElementById('count');
+      const loginButton = document.getElementById('login-button');
+      let activePassword = '';
+
+      const choiceLabels = { yes: 'Yes, always ❤️', time: 'I need a little time', no: 'No' };
+
+      function addText(parent, tag, className, value) {
+        const element = document.createElement(tag);
+        if (className) element.className = className;
+        element.textContent = value;
+        parent.appendChild(element);
+        return element;
+      }
+
+      function renderResponses(rows) {
+        list.replaceChildren();
+        count.textContent = `${rows.length} response${rows.length === 1 ? '' : 's'}`;
+        if (!rows.length) {
+          addText(list, 'p', 'empty', 'No one has shared a response yet. When one arrives, it will appear here. 💗');
+          return;
+        }
+        rows.forEach((row) => {
+          const card = document.createElement('article');
+          card.className = 'response';
+          const head = document.createElement('div');
+          head.className = 'response-head';
+          const date = row.created_at ? new Date(row.created_at).toLocaleString('en-IN', { dateStyle: 'medium', timeStyle: 'short' }) : 'Date unavailable';
+          addText(head, 'div', 'date', date);
+          addText(head, 'div', 'choice', choiceLabels[row.final_choice] || 'Response received');
+          card.appendChild(head);
+          (Array.isArray(row.answers) ? row.answers : []).forEach((item) => {
+            const qa = document.createElement('div');
+            qa.className = 'qa';
+            addText(qa, 'p', 'q', item.question || 'Question');
+            addText(qa, 'p', 'a', item.answer || '');
+            card.appendChild(qa);
+          });
+          list.appendChild(card);
+        });
+      }
+
+      async function loadResponses(password) {
+        status.textContent = 'Checking your password…';
+        loginButton.disabled = true;
+        try {
+          const response = await fetch('/.netlify/functions/get-responses', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ password })
+          });
+          const result = await response.json().catch(() => ({}));
+          if (!response.ok || !result.ok) throw new Error(result.message || 'Could not load responses.');
+          activePassword = password;
+          renderResponses(result.responses || []);
+          inbox.hidden = false;
+          status.textContent = '';
+        } catch (error) {
+          activePassword = '';
+          inbox.hidden = true;
+          status.textContent = error.message || 'Something went wrong. Please try again.';
+        } finally {
+          loginButton.disabled = false;
+        }
+      }
+
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        loadResponses(passwordInput.value);
+        passwordInput.value = '';
+      });
+      document.getElementById('refresh').addEventListener('click', () => {
+        if (activePassword) loadResponses(activePassword);
+      });
+      document.getElementById('lock').addEventListener('click', () => {
+        activePassword = '';
+        inbox.hidden = true;
+        list.replaceChildren();
+        status.textContent = 'Dashboard locked.';
+      });
+    })();
+  </script>
+</body>
+</html>
